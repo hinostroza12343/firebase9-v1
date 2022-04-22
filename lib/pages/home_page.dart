@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
         categorias.add(myMap);
         setState(() {});
       }).toList();
-    print("xxxxxxxxxx> ${categorias}");
+    print("xxxxxxxxxxZzz> ${categorias}");
     });
   }
 
