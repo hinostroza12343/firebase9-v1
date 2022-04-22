@@ -41,12 +41,10 @@ class _HomePageState extends State<HomePage> {
         categorias.add(myMap);
         setState(() {});
       }).toList();
-    print("xxxxxxxxxxZzzssssssss> ${categorias}");
+    print("xxxxxxxx> ${categorias}");
     });
   }
-getdatadds(){
-  // "kdkdksmdksmdksmdasas"
-}
+ 
   int _current = 0;
   final CarouselController _controller = CarouselController();
   List<String> imgList = [
