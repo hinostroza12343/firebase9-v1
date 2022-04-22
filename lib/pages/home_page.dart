@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getCategorias();
-    getCategorias2();
+    getCategorias2();  
   } 
 
   getCategorias2() {
@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
     collection.get().then((value) {
       value.docs.map((e) {
 
-        print(".......------->${e.data()}");
+        print(".......--------->${e.data()}");
         setState(() {});
       }).toList();
       // print("xxxxxxxxxx> ${categorias}");
