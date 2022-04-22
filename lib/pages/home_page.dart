@@ -44,7 +44,9 @@ class _HomePageState extends State<HomePage> {
     print("xxxxxxxxxxZzzssssssss> ${categorias}");
     });
   }
-
+getdatadds(){
+  // "kdkdksmdksmdksmdasas"
+}
   int _current = 0;
   final CarouselController _controller = CarouselController();
   List<String> imgList = [
