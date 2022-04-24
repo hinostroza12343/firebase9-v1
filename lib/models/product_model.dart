@@ -7,52 +7,60 @@ String productModelToJson(ProductModel data) => json.encode(data.toJson());
 
 class ProductModel {
   ProductModel({
-    required this.id,
-    required this.brand,
+       this.id,
+     required  this.marca,
+      this.rate,
     required this.category,
     required this.name,
     required this.description,
     required this.price,
     this.quantity,
-    required this.stock,
+      this.stock,
     required this.image,
-    required this.activated,
-  });
+      this.activated,
+        this.pk
+  }); 
 
-  int id;
-  String brand;
+  String? pk;
+  int? id;
+  int? rate;
+  String marca;
   String category;
   String name;
   String description;
   double price;
   int? quantity;
-  int stock;
+  int? stock;
   String image;
-  bool activated;
+  bool? activated;
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-    id: json["id"],
-    brand: json["brand"],
-    category: json["category"] ?? "",
-    name: json["name"],
-    description: json["description"] ?? "",
-    price: json["price"],
+    id: json["id"]??0,
+    rate:json["rate"]??0,
+    marca: json["marca"]??"",
+    category: json["categoria"]?? "",
+    name: json["name"]??"",
+    description: json["descripcion"] ?? "",
+    price: json["price"]??0,
     quantity: json["quantity"] ?? 0,
     stock: json["stock"] ?? 0,
-    image: json["image"],
+    image: json["image"]??"",
     activated: json["activated"] ?? false,
+    pk: json["pk"]??"",
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "brand": brand,
-    "category": category,
+    "rate":rate,
+    "marca": marca,
+    "categoria": category,
     "name": name,
-    "description": description,
+    "descripcion": description,
     "price": price,
     "quantity": quantity ?? 0,
     "stock": stock,
     "image": image,
     "activated": activated,
+    "pk":pk,
   };
 }

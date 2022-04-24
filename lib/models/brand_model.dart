@@ -16,11 +16,11 @@ class BrandModel {
   String brand;
   bool activated;
 
-  factory BrandModel.fromJson(Map<String, dynamic> perrito) => BrandModel(
-    id: perrito["id"],
-    image: perrito["image"],
-    brand: perrito["brand"],
-    activated: perrito["activated"],
+  factory BrandModel.fromJson(Map<String, dynamic> json) => BrandModel(
+    id: json["id"],
+    image: json["image"],
+    brand: json["brand"],
+    activated: json["activated"],
   );
 
 

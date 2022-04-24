@@ -6,25 +6,13 @@ import 'package:firebase_9_app/services/firebase_services.dart';
 import 'package:firebase_9_app/widgets/Item_Product_ID.dart';
 import 'package:flutter/material.dart';
 
-class ProductListPage extends StatefulWidget {
-  @override
-  State<ProductListPage> createState() => _ProductListPageState();
-}
-
-class _ProductListPageState extends State<ProductListPage> {
-  FirestoreService firestoreServiceProduct =
+class RackListPage extends StatelessWidget {
+ FirestoreService firestoreServiceProduct =
       FirestoreService(collection: "productos");
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  bool loading = true;
-  List banner = [];
-  List brand = []; 
   @override
   Widget build(BuildContext context) {
+  bool loading = true; 
+ 
     return Scaffold(
       backgroundColor: const Color(0xff0A0D15),
       appBar: AppBar(
@@ -66,7 +54,7 @@ class _ProductListPageState extends State<ProductListPage> {
                     icon: const Icon(Icons.shopping_cart_sharp,
                         color: Colors.white),
                   ),
-              
+                
                 ],
               ),
             ],
@@ -83,7 +71,8 @@ class _ProductListPageState extends State<ProductListPage> {
               margin: const EdgeInsets.symmetric(vertical: 5),
               child: SafeArea(
                 child: FutureBuilder(
-                  future: firestoreServiceProduct.getProductModel(),
+                  future: firestoreServiceProduct.getProductModelID(
+                      id: "m0uLlO3auZRUSAlZ5a7b"),
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.hasData) {
                       List<ProductModel> aux = snapshot.data;

@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 class ItemWidget extends StatelessWidget {
   String image;
   String nombre;
-  Widget goTo;
-  int price;
+  Widget? goTo;
+  double price;
   ItemWidget(
       {required this.price,
       required this.image,
       required this.nombre,
-      required this.goTo});
+       this.goTo});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => goTo));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => goTo!));
 
         // Navigator.push(
         //   context,

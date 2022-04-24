@@ -1,10 +1,19 @@
 import 'package:carousel_slider/carousel_controller.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_9_app/db/db_manager.dart';
+import 'package:firebase_9_app/models/bnner_model.dart';
+import 'package:firebase_9_app/models/product_model.dart';
+import 'package:firebase_9_app/pages/CardioList.dart';
+import 'package:firebase_9_app/pages/ComplementosList.dart';
+import 'package:firebase_9_app/pages/EquipamientoList.dart';
+import 'package:firebase_9_app/pages/RackList.dart';
+import 'package:firebase_9_app/pages/SueliList.dart';
 import 'package:firebase_9_app/pages/cart_page.dart';
 import 'package:firebase_9_app/pages/producl_Detail_page.dart';
 import 'package:firebase_9_app/pages/product_List_page.dart';
 import 'package:firebase_9_app/services/firebase_services.dart';
+import 'package:firebase_9_app/utils/search_product.dart';
 import 'package:firebase_9_app/widgets/Item_Text_Titulos.dart';
 import 'package:firebase_9_app/widgets/Item_widget.dart';
 import 'package:firebase_9_app/widgets/category_widget.dart';
@@ -23,12 +32,15 @@ class _HomePageState extends State<HomePage> {
   FirestoreService collectionCategory =
       FirestoreService(collection: "categorias");
   FirestoreService collectionProduc = FirestoreService(collection: "productos");
+  FirestoreService collectionBanner =
+      FirestoreService(collection: "promociones");
   List categorias = [];
   List categorias2 = [];
 
   @override
   void initState() {
     super.initState();
+
     // getCategorias();
     // getCategorias2();
     // getAllCaterorias();
@@ -74,15 +86,10 @@ class _HomePageState extends State<HomePage> {
   ];
   bool loading = false;
   List banner = [];
-  // List categorias = [];
-  List brand = [];
-  bool activo = false;
+  List brand = []; 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(onPressed: () {
-      //    getCategorias();
-      // }),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: ListTile(
@@ -105,26 +112,23 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           trailing: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+           mainAxisAlignment: MainAxisAlignment.end,
+            // crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                onPressed: () {
-                  // FirestoreService firestoreService = FirestoreService();
-                  // firestoreService.getCategorias1();
-
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => CartPage(),
-                  //     ));
+                onPressed: () async {
+                  final result = await showSearch(
+                    context: context,
+                    delegate: SearchProduct(
+                      productos: await collectionProduc.getProductModel(),
+                    ),
+                  );
                 },
-                icon: const Icon(Icons.search_outlined, color: Colors.white),
+                icon: const Icon(Icons.search_outlined, color: Colors.grey,size: 27,),
               ),
-              Stack(
-                children: [
-                  IconButton(
+                IconButton(
                     onPressed: () {
                       Navigator.push(
                           context,
@@ -133,84 +137,14 @@ class _HomePageState extends State<HomePage> {
                           ));
                     },
                     icon: const Icon(Icons.shopping_cart_sharp,
-                        color: Colors.white),
+                        color: Colors.blueGrey),
                   ),
-                  activo
-                      ? const Positioned(
-                          right: 9,
-                          top: 8,
-                          child: CircleAvatar(
-                            radius: 7,
-                            backgroundColor: Color(0xffE42165),
-                            child: Center(
-                              child: Text(
-                                "",
-                                //  "   preferences.quantity.toString(),"
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(),
-                ],
-              ),
+                 
             ],
           ),
         ),
       ),
-      backgroundColor: Color(0xff0A0D15),
-      drawer: Drawer(
-        child: DrawerHeader(
-          child: Column(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Center(
-                    child: Text(
-                      "Menu",
-                      style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 145,
-              ),
-              const ListTile(
-                leading: Icon(Icons.settings_applications_outlined,
-                    color: Colors.grey),
-                title: Text(
-                  "Rutinas",
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text(
-                  "Halterofilia",
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500, color: Colors.grey),
-                ),
-                trailing: Icon(Icons.check, color: Colors.grey),
-              ),
-              const Divider(
-                thickness: 0.9,
-                color: Colors.grey,
-              )
-            ],
-          ),
-        ),
-        backgroundColor: Color(0xff0A0D15).withOpacity(0.95),
-      ),
+      backgroundColor: const Color(0xff0A0D15),
       body: loading == true
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xffE42165)),
@@ -224,7 +158,6 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: 2,
                       ),
-
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         physics: const ScrollPhysics(),
@@ -237,18 +170,40 @@ class _HomePageState extends State<HomePage> {
                                 if (snap.hasData) {
                                   List<Map<String, dynamic>> aux123 = snap.data;
                                   return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: List.generate(
-                                      aux123.length,
-                                      (index) => Category_widget(
-                                        categoria: aux123[index]["descripcion"],
-                                        goTo: ProductListPage(),
-                                      ),
-                                    ),
+                                    children: [
+                                      Category_widget(
+                                          categoria: "TODOS",
+                                          goTo: ProductListPage()),
+                                      Category_widget(
+                                          categoria: "EQUIPAMIENTO",
+                                          goTo: EquipamentoList()),
+                                      Category_widget(
+                                          categoria: "RACKS Y JAULAS",
+                                          goTo: RackListPage()),
+                                      Category_widget(
+                                          categoria: "SUELO",
+                                          goTo: SueloListPage()),
+                                      Category_widget(
+                                          categoria: "CARDIO",
+                                          goTo: CardioListPage()),
+                                      Category_widget(
+                                          categoria: "COMPLEMENTOS",
+                                          goTo: ComplementoListPage())
+                                    ],
                                   );
+                                  // return  Row(
+                                  //   mainAxisAlignment: MainAxisAlignment.center,
+                                  //   children: List.generate(
+                                  //     aux123.length,
+                                  //     (index) => Category_widget(
+                                  //       categoria: aux123[index]["descripcion"],
+                                  //       goTo: ProductListPage(),
+                                  //     ),
+                                  //   ),
+                                  // );
+
                                 }
                                 return Container();
-
                                 // return const LinearProgressIndicator(
                                 //    color: Color(0xffE42165),
                               }),
@@ -284,193 +239,211 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: 12,
                       ),
-                      // FutureBuilder(
-                      //     future: getBanner(),
-                      //     builder: (BuildContext context, AsyncSnapshot snap) {
-                      //       if (snap.hasData) {
-                      //         List aux321 = snap.data;
-                      //         return
-                      //       }
-                      //       return Container();
-                      //       // const Center(
-                      //       //     child: CircularProgressIndicator(
-                      //       //   color: Color(0xffE42165),
-                      //       // ));
-                      //     }),
-                      CarouselSlider(
-                          items: imgList
-                              .map<Widget>(
-                                (e) => GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(context, MaterialPageRoute(
-                                      builder: (context) {
-                                        return ProductListPage();
+                      FutureBuilder(
+                        future: collectionBanner.getBannerModel(),
+                        builder: (BuildContext context, AsyncSnapshot snap) {
+                          if (snap.hasData) {
+                            List<BannerModel> aux = snap.data;
+                            return CarouselSlider(
+                              items: aux
+                                  .map<Widget>(
+                                    (e) => GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                          builder: (context) {
+                                            return ProductListPage();
+                                          },
+                                        ));
                                       },
-                                    ));
-                                  },
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 6),
-                                    height: 250,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      image: DecorationImage(
-                                        fit: BoxFit.cover,
-                                        image: NetworkImage(
-                                            "https://getstrong.es/wp-content/uploads/2021/10/dumbell-black-general.jpg"),
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 6),
+                                        // height: 250,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(
+                                              e.image,
+                                            ),
+                                            // "https://getstrong.es/wp-content/uploads/2021/10/dumbell-black-general.jpg"),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          options: CarouselOptions(
-                              height: 220,
-                              autoPlay: true,
-                              autoPlayAnimationDuration:
-                                  const Duration(milliseconds: 1800),
-                              onPageChanged: (int index, _) {
-                                _current = index;
-                                setState(() {});
-                              })),
-                      // FutureBuilder(
-                      //     future: getBanner(),
-                      //     builder: (BuildContext context, AsyncSnapshot snap) {
-                      //       if (snap.hasData) {
-                      //         List auxiliar = snap.data;
-                      //         return
-                      //       }
-                      //       return Container();
-                      //     }),
-
-                      Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: imgList.asMap().entries.map((entry) {
-                            return GestureDetector(
-                              onTap: () => _controller.animateToPage(entry.key),
-                              child: Container(
-                                width: 8.0,
-                                height: 8.0,
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 8.0, horizontal: 4.0),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: (Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Color(0xffE42165))
-                                        .withOpacity(
-                                            _current == entry.key ? 0.9 : 0.4)),
+                                  )
+                                  .toList(),
+                              options: CarouselOptions(
+                                height: 215,
+                                autoPlay: true,
+                                autoPlayAnimationDuration:
+                                    const Duration(milliseconds: 1800),
+                                onPageChanged: (int index, _) {
+                                  _current = index;
+                                  setState(() {});
+                                },
                               ),
                             );
-                          }).toList(),
+                          }
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(0xffE42165),
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: FutureBuilder(
+                          future: collectionBanner.getBannerModel(),
+                          builder: (BuildContext context, AsyncSnapshot snap) {
+                            if (snap.hasData) {
+                              List<BannerModel> aux = snap.data;
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: aux.asMap().entries.map((entry) {
+                                  return GestureDetector(
+                                    onTap: () =>
+                                        _controller.animateToPage(entry.key),
+                                    child: Container(
+                                      width: 8.0,
+                                      height: 8.0,
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 8.0, horizontal: 4.0),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: (Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Color(0xffE42165))
+                                              .withOpacity(_current == entry.key
+                                                  ? 0.9
+                                                  : 0.4)),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }
+                            return Container();
+                          },
                         ),
                       ),
-
-                      // Container(
-                      //   margin:
-                      //       const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                      //   child: Row(
-                      //     crossAxisAlignment: CrossAxisAlignment.center,
-                      //     // mainAxisAlignment: MainAxisAlignment.start,
-                      //     children: [
-                      //       const Text(
-                      //         "Lo mas Comprado",
-                      //         style: TextStyle(
-                      //             color: Colors.white,
-                      //             fontWeight: FontWeight.bold,
-                      //             fontSize: 20),
-                      //       ),
-                      //       const SizedBox(
-                      //         width: 5,
-                      //       ),
-                      //       Container(
-                      //         height: 8,
-                      //         width: 8,
-                      //         decoration: const BoxDecoration(
-                      //           shape: BoxShape.circle,
-                      //           color: Color(0xffE42165),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-                      // Padding(
-                      //   padding:
-                      //       const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                      //   child: Container(
-                      //     constraints: const BoxConstraints(
-                      //       maxHeight: 200,
-                      //       maxWidth: 330,
-                      //     ),
-                      //     child: ListView.builder(
-                      //         primary: true,
-                      //         physics: const ScrollPhysics(),
-                      //         scrollDirection: Axis.horizontal,
-                      //         shrinkWrap: true,
-                      //         itemCount: 10,
-                      //         itemBuilder: (BuildContext context, int index) {
-                      //           return Container(
-                      //             margin: const EdgeInsets.symmetric(horizontal: 10),
-                      //             height: 200,
-                      //             width: 240,
-                      //             decoration: BoxDecoration(
-                      //               color: const Color(0xff1E1E2C),
-                      //               borderRadius: BorderRadius.circular(12),
-                      //             ),
-                      //             child: Stack(
-                      //               children: [
-                      //                 Row(
-                      //                   mainAxisAlignment: MainAxisAlignment.center,
-                      //                   children: [
-                      //                     Center(
-                      //                       child: Container(
-                      //                         height: 180,
-                      //                         width: 200,
-                      //                         decoration: BoxDecoration(
-                      //                           borderRadius:
-                      //                               BorderRadius.circular(12),
-                      //                           image: const DecorationImage(
-                      //                             fit: BoxFit.cover,
-                      //                             image: NetworkImage(
-                      //                                 "https://getstrong.es/wp-content/uploads/2015/11/disco-training-color-para-crossfit.jpg"),
-                      //                           ),
-                      //                         ),
-                      //                       ),
-                      //                     ),
-                      //                   ],
-                      //                 ),
-                      //                 Align(
-                      //                   alignment: Alignment.topRight,
-                      //                   child: Container(
-                      //                     margin: const EdgeInsets.symmetric(
-                      //                         vertical: 15, horizontal: 8),
-                      //                     decoration: BoxDecoration(
-                      //                       color: const Color(0xffE42165),
-                      //                       borderRadius: BorderRadius.circular(18),
-                      //                     ),
-                      //                     child: Container(
-                      //                       margin: const EdgeInsets.all(8),
-                      //                       child: Text(
-                      //                         "S/.1090",
-                      //                         style: TextStyle(
-                      //                             color:
-                      //                                 Colors.white.withOpacity(0.85),
-                      //                             fontSize: 16,
-                      //                             fontWeight: FontWeight.w700),
-                      //                       ),
-                      //                     ),
-                      //                   ),
-                      //                 ),
-                      //               ],
-                      //             ),
-                      //           );
-                      //         }),
-                      //   ),
-                      // ),
+                      Item_TextTitulos(titulo: "Lo mas Comprado"),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 15),
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            maxHeight: 200,
+                            maxWidth: 330,
+                          ),
+                          child: FutureBuilder(
+                            future: collectionProduc.getProductModelID(
+                                id: "m0uLlO3auZRUSAlZ5a7b"),
+                            builder:
+                                (BuildContext context, AsyncSnapshot snap) {
+                              if (snap.hasData) {
+                                List<ProductModel> aux = snap.data;
+                                return ListView.builder(
+                                    primary: true,
+                                    physics: const ScrollPhysics(),
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    itemCount: aux.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ProductDetailPage(
+                                                        productModel:
+                                                            aux[index]),
+                                              ));
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          height: 200,
+                                          width: 240,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xff1E1E2C),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Center(
+                                                    child: Container(
+                                                      height: 180,
+                                                      width: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        image: DecorationImage(
+                                                          fit: BoxFit.cover,
+                                                          image: NetworkImage(
+                                                            aux[index].image,
+                                                          ),
+                                                          // "https://getstrong.es/wp-content/uploads/2015/11/disco-training-color-para-crossfit.jpg"),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Align(
+                                                alignment: Alignment.topRight,
+                                                child: Container(
+                                                  margin: const EdgeInsets
+                                                          .symmetric(
+                                                      vertical: 15,
+                                                      horizontal: 8),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        const Color(0xffE42165),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18),
+                                                  ),
+                                                  child: Container(
+                                                    margin:
+                                                        const EdgeInsets.all(8),
+                                                    child: Text(
+                                                      "S/${aux[index].price.toString()}",
+                                                      style: TextStyle(
+                                                          color: Colors.white
+                                                              .withOpacity(
+                                                                  0.85),
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }
+                              return Container();
+                            },
+                          ),
+                        ),
+                      ),
                       Item_TextTitulos(titulo: "Barras y Discos"),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -481,12 +454,13 @@ class _HomePageState extends State<HomePage> {
                             maxWidth: double.infinity,
                           ),
                           child: FutureBuilder(
-                            future: collectionProduc.getProduct(
-                                category: "lZEJErlTGD8R3bmhH6Ra"),
+                            future: collectionProduc.getProductModelID(
+                                id: "lZEJErlTGD8R3bmhH6Ra"),
                             builder:
                                 (BuildContext context, AsyncSnapshot snap) {
                               if (snap.hasData) {
-                                List<Map<String, dynamic>> aux2 = snap.data;
+                                // List<Map<String, dynamic>> aux2 = snap.data;
+                                List<ProductModel> aux2 = snap.data;
                                 return ListView.builder(
                                   primary: true,
                                   physics: const ScrollPhysics(),
@@ -496,12 +470,14 @@ class _HomePageState extends State<HomePage> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return ItemWidget(
-                                      image: aux2[index]["image"],
-                                      nombre: aux2[index]["name"],
-                                      price: aux2[index]["price"],
+                                      image: aux2[index].image,
                                       goTo: ProductDetailPage(
-                                        product: aux2[index],
-                                      ),
+                                          productModel: aux2[index]),
+                                      nombre: aux2[index].name,
+                                      price: aux2[index].price,
+                                      // goTo: ProductDetailPage(
+                                      //   productModel: aux2[index],
+                                      // ),
                                     );
                                   },
                                 );
@@ -521,12 +497,12 @@ class _HomePageState extends State<HomePage> {
                             maxWidth: double.infinity,
                           ),
                           child: FutureBuilder(
-                            future: collectionProduc.getProduct(
-                                category: "m0uLlO3auZRUSAlZ5a7b"),
+                            future: collectionProduc.getProductModelID(
+                                id: "m0uLlO3auZRUSAlZ5a7b"),
                             builder:
                                 (BuildContext context, AsyncSnapshot snap) {
                               if (snap.hasData) {
-                                List<Map<String, dynamic>> aux2 = snap.data;
+                                List<ProductModel> aux2 = snap.data;
                                 return ListView.builder(
                                   primary: true,
                                   physics: const ScrollPhysics(),
@@ -536,11 +512,11 @@ class _HomePageState extends State<HomePage> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return ItemWidget(
-                                      image: aux2[index]["image"],
-                                      nombre: aux2[index]["name"],
-                                      price: aux2[index]["price"],
+                                      image: aux2[index].image,
+                                      nombre: aux2[index].name,
+                                      price: aux2[index].price,
                                       goTo: ProductDetailPage(
-                                          product: aux2[index]),
+                                          productModel: aux2[index]),
                                     );
                                   },
                                 );
@@ -552,7 +528,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Item_TextTitulos(
                           titulo: "Productos que te pueden interesar"),
-
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
@@ -568,12 +543,11 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 20),
                                 child: FutureBuilder(
-                                  future: collectionProduc.getAllProduct(),
+                                  future: collectionProduc.getProductModel(),
                                   builder: (BuildContext context,
                                       AsyncSnapshot snap) {
                                     if (snap.hasData) {
-                                      List<Map<String, dynamic>> aux =
-                                          snap.data;
+                                      List<ProductModel> aux = snap.data;
                                       return GridView.count(
                                         crossAxisCount: 2,
                                         primary: true,
@@ -582,18 +556,29 @@ class _HomePageState extends State<HomePage> {
                                         mainAxisSpacing: 10,
                                         physics: const ScrollPhysics(),
                                         children: aux.map((e) {
-                                          return Container(
-                                            height: 100,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                  e["image"],
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        ProductDetailPage(
+                                                            productModel: e),
+                                                  ));
+                                            },
+                                            child: Container(
+                                              height: 100,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: NetworkImage(
+                                                    e.image,
+                                                  ),
+                                                  //  "https://getstrong.es/wp-content/uploads/2021/10/dumbell-black-general.jpg"),
                                                 ),
-                                                //  "https://getstrong.es/wp-content/uploads/2021/10/dumbell-black-general.jpg"),
                                               ),
+                                              // child:Text(e["brand"]),
                                             ),
-                                            // child:Text(e["brand"]),
                                           );
                                         }).toList(),
                                       );
@@ -608,6 +593,13 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(
                         height: 30,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Divider(
+                          thickness: 0.9,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),

@@ -20,7 +20,7 @@ class Category_widget extends StatelessWidget {
           avatar: SvgPicture.asset(
             "assets/images/weightlifting.svg",
             fit: BoxFit.cover,
-            height: 23,
+            height: 20,
             color: Colors.white,
           ),
           backgroundColor: const Color(0xffE42165),
@@ -28,7 +28,7 @@ class Category_widget extends StatelessWidget {
           label: Text(
             categoria,
             style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w500, fontSize: 18),
+                color: Colors.white, fontWeight: FontWeight.w700, fontSize: 16),
           ),
         ),
       ),
