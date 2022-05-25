@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_9_app/models/bnner_model.dart';
 import 'package:firebase_9_app/models/product_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_9_app/models/sale_model.dart'; 
 
 class FirestoreService {
   bool? loading;
@@ -15,7 +15,6 @@ class FirestoreService {
       print("Datos Registrados33");
     });
   }
-  
 
   Future<List<Map<String, dynamic>>> getCategorias1() async {
     List<Map<String, dynamic>> listcategorias = [];
@@ -28,6 +27,44 @@ class FirestoreService {
       listcategorias.add(categorias);
     });
     return listcategorias;
+  }
+
+  Future<List<Map<String, dynamic>>> getSale() async {
+    List<Map<String, dynamic>> allproduct = [];
+    QuerySnapshot collectionReferences = await firestoreReferences.get();
+    collectionReferences.docs.forEach((element) {
+      Map<String, dynamic> product = element.data() as Map<String, dynamic>;
+      product["pk"] = element.id;
+      allproduct.add(product);
+      // print(product);
+    });
+    return allproduct;
+  }  
+  deleteDocumentFirebase()async {
+    String? pk;
+   QuerySnapshot? collectionReferences=await firestoreReferences.doc().delete().
+   then((value) {
+      
+      print("Lista eliminada!");
+    }).catchError((error) {
+      print("Hubo un error al eliminar");
+    });
+  }
+  Future<List<Map<String, dynamic>>> deleteSale() async {
+    List<Map<String, dynamic>> allproduct = [];
+    QuerySnapshot collectionReferences = await firestoreReferences.get();
+    collectionReferences.docs.forEach((element) {
+      Map<String, dynamic> product = element.data() as Map<String, dynamic>;
+        
+      product["pk"] = element.id;
+      allproduct.add(product);
+         final lista =
+                      FirebaseFirestore.instance.collection("SaleDetail")
+                      .doc(product["pk"]=element.id);
+                  lista.delete();
+    print(product);
+    });
+    return allproduct;
   }
 
   // Future<List<Map<String, dynamic>>> getProduct(
@@ -67,6 +104,17 @@ class FirestoreService {
     return productModel;
   }
 
+  Future<List<SaleModel>> getSaleDetailModel() async {
+    List<SaleModel> saleModel = [];
+    QuerySnapshot collectionReferences = await firestoreReferences.get();
+    collectionReferences.docs.forEach((element) {
+      Map<String, dynamic> mymap = element.data() as Map<String, dynamic>;
+      mymap["pk"] = element.id;
+      saleModel.add(SaleModel.fromJson(mymap));
+    });
+
+    return saleModel;
+  }
   // Future<List<Map<String, dynamic>>> getAllProduct() async {
   //   List<Map<String, dynamic>> allproduct = [];
   //   QuerySnapshot collectionReferences = await firestoreReferences.get();

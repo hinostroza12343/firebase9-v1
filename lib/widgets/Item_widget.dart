@@ -14,14 +14,7 @@ class ItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => goTo!));
-
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) =>goTo());
-        //           // product: product2[index], )),
-        // );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => goTo!)); 
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10),

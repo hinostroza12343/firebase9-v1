@@ -38,13 +38,43 @@ class ItemSearchWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xff0A0D15),
                 borderRadius: BorderRadius.circular(14.0),
-                image: DecorationImage(
+                // image: DecorationImage(
+                //   fit: BoxFit.cover,
+                //   image: NetworkImage(
+                //     image,
+                //   ),
+                // ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: FadeInImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(
-                    image,
+                  image: NetworkImage(image),
+                  placeholder: const AssetImage(
+                    "assets/images/hk2.jpeg",
                   ),
+                  imageErrorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      "assets/images/hk2.jpeg",
+                      height: 50,
+                      fit: BoxFit.cover,
+                    );
+                  },
                 ),
               ),
+              // child: Image.network(
+              //   image,
+              //   errorBuilder: (BuildContext context, Object exception,
+              //       StackTrace? stackTrace) {
+              //     // Appropriate logging or analytics, e.g.
+              //     // myAnalytics.recordError(
+              //     //   'An error occurred loading "https://example.does.not.exist/image.jpg"',
+              //     //   exception,
+              //     //   stackTrace,
+              //     // );
+              //     return Image.asset("assets/images/hk2.jpeg",);
+              //   },
+              // ),
             ),
             const SizedBox(
               width: 8.0,
@@ -56,7 +86,7 @@ class ItemSearchWidget extends StatelessWidget {
                   Text(
                     brand!,
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.grey,
                         fontWeight: FontWeight.bold,
                         fontSize: 14),
                   ),
@@ -65,7 +95,7 @@ class ItemSearchWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.grey,
                         fontWeight: FontWeight.w600,
                         fontSize: 16),
                   ),
@@ -77,7 +107,7 @@ class ItemSearchWidget extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.grey,
                         fontWeight: FontWeight.normal,
                         fontSize: 14),
                   ),
@@ -99,7 +129,7 @@ class ItemSearchWidget extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.grey,
                             fontWeight: FontWeight.bold,
                             fontSize: 14),
                       ),
@@ -124,9 +154,9 @@ class ItemSearchWidget extends StatelessWidget {
               ),
             ),
             Text(
-              "S/${price}".toString(),
+              "S/${price.toString()}",
               style: const TextStyle(
-                  color: Colors.white,
+                  color: Colors.grey,
                   fontWeight: FontWeight.bold,
                   fontSize: 16),
             ),

@@ -29,7 +29,8 @@ class SaleModel {
 class SaleDetail {
   SaleDetail({
     this.image,
-    this.name,
+    required this.name,
+    this.price2,
     // this.marca,
     required this.quantity,
     required this.product,
@@ -38,20 +39,24 @@ class SaleDetail {
   int quantity;
   int product;
   // String? marca;
-  String? name;
+  String name;
   String? image;
+  double? price2;
 
   factory SaleDetail.fromJson(Map<String, dynamic> json) => SaleDetail(
         // marca: json["marca"]??"",
-        image: json["image"],
-        name: json["name"],
-        quantity: json["quantity"],
-        product: json["product"],
+      
+        image: json["image"]??"",
+        name: json["name"]??"",
+        price2:json["price"]??0.0,
+        quantity: json["quantity"]??0,
+        product: json["product"]??0,
       );
 
   Map<String, dynamic> toJson() => {
         // "marca": marca,
         "image": image,
+        "price":price2,
         "name": name,
         "quantity": quantity,
         "product": product,

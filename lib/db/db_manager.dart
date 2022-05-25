@@ -30,7 +30,7 @@ class DBManager {
     final int res = await db!.rawInsert(
         "INSERT INTO Product(id,brand,name,price,quantity,image) VALUES "
         "(${productHModel.id},'${productHModel.marca}','${productHModel.name}', ${productHModel.price},${productHModel.quantity},'${productHModel.image}' )");
-    print(res);
+    // print(res);
     return res;
   }
 
@@ -39,7 +39,7 @@ class DBManager {
     // int res = await db!.insert("Product", productModel.toJson());
     int res = await db!.rawInsert(
         "INSERT INTO Product(id, brand, name, price, quantity, image) VALUES (${productModel.id}, '${productModel.marca}', '${productModel.name}', ${productModel.price}, ${productModel.quantity}, '${productModel.image}')");
-    print(res);
+    // print(res);
     return res;
   }
 
@@ -55,20 +55,41 @@ class DBManager {
     final int res = await db!.delete("Product");
     print("Eliminado ${res}");
     return res;
-  } 
-   
-   Future<List<ProductModel>> getAllProducts() async {
+  }
+
+  Future<List<ProductModel>> getAllProducts() async {
     final db = await database;
     List<Map<String, dynamic>> res = await db!.query("Product");
-    List<ProductModel> listProductModel = res.isNotEmpty
-        ? res.map((e) => ProductModel.fromJson(e)).toList()
-        : [];
+    List<ProductModel> listProductModel =
+        res.isNotEmpty ? res.map((e) => ProductModel.fromJson(e)).toList() : [];
     // print(listProductModel);
-    print(res);
+    // print(res);
     return listProductModel;
   }
 
+  Future<List<ProductModel>> getAllProducts2(int quantityid) async {
+    final db = await database;
+    List<Map<String, dynamic>> res =
+        await db!.query("Product", where: "quantity=$quantityid");
+    List<ProductModel> listProductModel =
+        res.isNotEmpty ? res.map((e) => ProductModel.fromJson(e)).toList() : [];
+    // print(listProductModel);
+    // print(res);
+    return listProductModel;
+  }
+
+  Future<List<ProductModel>> getAllProducts3(int id) async {
+    final db = await database;
+    List<Map<String, dynamic>> res =
+        await db!.rawQuery("SELECT quantity from Product where id=$id");
+    List<ProductModel> listProductModel =
+        res.isNotEmpty ? res.map((e) => ProductModel.fromJson(e)).toList() : [];
+    // print(listProductModel);
+    // print(res);
+    return listProductModel;
+  }
 }
+ 
   // Future<List<ProductModel>> getProduct() async {
   //   final db = await database;
   //   List<Map<String, dynamic>> res = await db!.query("Product");

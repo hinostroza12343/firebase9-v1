@@ -43,6 +43,7 @@ dependencies:
   flutter_svg: ^0.22.0
   cloud_firestore: ^3.1.12 
   firebase_core: ^1.7.0
+  cached_network_image: ^2.3.3
 
 
 dev_dependencies:
@@ -62,9 +63,6 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

@@ -1,8 +1,8 @@
 import 'package:firebase_9_app/db/db_manager.dart';
-import 'package:firebase_9_app/models/product_model.dart';
-import 'package:firebase_9_app/pages/cart_page.dart';
-import 'package:firebase_9_app/pages/home_page.dart';
+import 'package:firebase_9_app/models/product_model.dart'; 
 import 'package:firebase_9_app/services/firebase_services.dart';
+import 'package:firebase_9_app/utils/preferences.dart';
+import 'package:firebase_9_app/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,17 +18,35 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  bool activo = false;
   FirestoreService collectionProduc = FirestoreService(collection: "productos");
+  final preferences = CartPreference();
 
   // bool carrito = false;
 
-@override
-void initState() { 
-  super.initState();
-  getData();
-}
+  @override
+  void initState() {
+    super.initState();
+    // getData();
+   
+  } 
+  
+ int counter = 0;
+  saveQuantity() {
+    widget.productModel!.quantity = counter;
+    DBManager.db.insertModel(widget.productModel!).then((value) {
+      // print(widget.productModel!.toJson());
+      getmodal();
+        counter = preferences.quantity;
+          preferences.quantity = counter+widget.productModel!.quantity!;
+      // saveQuantity();
+        counter = 0;
+      setState(() {});
+    }); 
+  }
+
   bool loading = true;
-  List<ProductModel>listproduct=[];
+  List<ProductModel> listproduct = [];
   getmodal() {
     return showDialog(
         context: context,
@@ -77,79 +95,17 @@ void initState() {
             ],
           );
         });
-  }
-  getData() {
-    collectionProduc.getProductModel().then((value) {
-      listproduct = value;
-      setState(() {
-        loading = true;
-      });
-    });
-  }
-  int counter = 0;
+  } 
+ 
   List product2 = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xff0A0D15),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: ListTile(
-          title: Center(
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) {
-                    return HomePage();
-                  },
-                ));
-              },
-              child: Text(
-                "GymShark",
-                style: TextStyle(
-                    color: Colors.white.withOpacity(0.75),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
-              ),
-            ),
-          ),
-          trailing: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CartPage(),
-                          ));
-                    },
-                    icon: const Icon(Icons.shopping_cart_sharp,
-                        color: Colors.white),
-                  ),
-                
-                ],
-              ),
-            ],
-          ),
-        ),
+      appBar: PreferredSize(
+        child: AppBarWidget(titulo: "Gymshark"),
+        preferredSize: const Size.fromHeight(45),
       ),
-      // appBar: PreferredSize(
-      //   child: carrito
-      //       ? AppBarWidget(
-      //           activo: true,
-      //           title: "Detalle del producto",
-      //         )
-      //       : AppBarWidget(
-      //           activo: false,
-      //           title: "Detalle del producto",
-      //         ),
-      //   preferredSize: const Size.fromHeight(50),
-      // ),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -163,12 +119,7 @@ void initState() {
                     height: 310,
                     width: double.infinity,
                     decoration: const BoxDecoration(
-                      color: Color(0xff0A0D15),
-                      // image: DecorationImage(
-                      //   image: NetworkImage(
-                      //     widget.product!.image,
-                      //   ),
-                      // ),
+                      color: Color(0xff0A0D15), 
                     ),
                     child: Stack(
                       children: [
@@ -276,33 +227,7 @@ void initState() {
                 const SizedBox(
                   height: 15,
                 ),
-                // Container(
-                //   margin:
-                //       const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                //   child: Row(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       const Text(
-                //         "Descripcion",
-                //         style: TextStyle(
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.bold,
-                //             fontSize: 20),
-                //       ),
-                //       const SizedBox(
-                //         width: 5,
-                //       ),
-                //       Container(
-                //         height: 8,
-                //         width: 8,
-                //         decoration: const BoxDecoration(
-                //           shape: BoxShape.circle,
-                //           color: Color(0xffE42165),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
+          
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -608,7 +533,7 @@ void initState() {
                                                         const Color(0xffE42165),
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                             19),
+                                                            19),
                                                   ),
                                                   child: Container(
                                                     margin:
@@ -635,13 +560,7 @@ void initState() {
                               return Container();
                             },
                           ),
-                    //  FutureBuilder(
-                    //   builder: (BuildContext context, AsyncSnapshot snap) {
-                    //     return
-                    //     // }
-                    //     // return const Center(child: CircularProgressIndicator());
-                    //   },
-                    // ),
+                  
                   ),
                 ),
                 const SizedBox(
@@ -659,33 +578,21 @@ void initState() {
               child: ElevatedButton.icon(
                 onPressed: counter != 0
                     ? () {
-                        widget.productModel!.quantity = counter;
+                        // widget.productModel!.quantity = counter;
 
-                        DBManager.db
-                            .insertModel(widget.productModel!)
-                            .then((value) {
-                          getmodal(); 
-                          //   saveQuantity();
-                          setState(() {
-                            
-                          });
-                        });
-                        print(widget.productModel!.toJson());
+                        // DBManager.db
+                        //     .insertModel(widget.productModel!)
+                        //     .then((value) {
+                        // getmodal();
+                        saveQuantity();
+                
+                        // });
+                        // print(widget.productModel!.toJson());
                         setState(() {});
-                      // carrito = true;
-                        counter = 0;
-                        // ProductModel productModel = ProductModel(
-                        //     id: 3,
-                        //     brand: " brand",
-                        //     category: "category",
-                        //     name: "name",
-                        //     description: " description",
-                        //     price: 123.32,
-                        //     stock: 121,
-                        //     image:
-                        //         "https://getstrong.es/wp-content/uploads/2015/11/soporte-barras.jpg",
-                        //     activated: true,
-                        //     );
+                        // carrito = true;
+                      
+                        activo = true;
+                     
                       }
                     : () {},
                 icon: const Icon(Icons.shopping_cart_outlined),

@@ -20,21 +20,21 @@ class SearchProduct extends SearchDelegate {
   @override
   ThemeData appBarTheme(BuildContext context) {
     return Theme.of(context).copyWith(
-      scaffoldBackgroundColor:    Color(0xff0A0D15),
+      scaffoldBackgroundColor: const Color(0xff0A0D15),
       hintColor: Colors.white60,
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: const InputDecorationTheme(
         hintStyle: TextStyle(
             color: Colors.white, fontSize: 16.0, fontWeight: FontWeight.w500),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide.none,
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: Color (0xff0A0D15), 
+        backgroundColor: Color(0xff0A0D15),
         // backgroundColor: Color(0xffF5F5F5),
       ),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         headline6: TextStyle(color: Colors.white),
       ),
     );
@@ -44,7 +44,7 @@ class SearchProduct extends SearchDelegate {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.close),
+        icon: const Icon(Icons.close),
         onPressed: () {
           query = "";
         },
@@ -55,7 +55,7 @@ class SearchProduct extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, result);
       },
@@ -64,11 +64,12 @@ class SearchProduct extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    // if (query
-    //     .trim()
-    //     .length == 0) {
-    //   return Text('no hay valor en el query');
-    // }
+    if (query.trim().length == 0) {
+      return const Center(
+          child: Text('Por favor ingrese el nombre de un Producto'));
+    } else if (query.trim().length >= 18) {
+      return Center(child: Text('Ingrese un caracter valido'));
+    }
 
     return ListView.builder(
         itemCount: lisProducts2!.length,
@@ -79,9 +80,9 @@ class SearchProduct extends SearchDelegate {
             name: lisProducts2![index].name,
             desciption: lisProducts2![index].description,
             brand: lisProducts2![index].marca,
-              rate: lisProducts2![index].rate,
+            rate: lisProducts2![index].rate,
             price: lisProducts2![index].price,
-           goTo: ProductDetailPage(
+            goTo: ProductDetailPage(
               productModel: lisProducts2![index],
             ),
           );
@@ -104,7 +105,7 @@ class SearchProduct extends SearchDelegate {
             brand: lisProducts2![index].marca,
             desciption: lisProducts2![index].description,
             // time: suggestions[index]['time'].toStringAsFixed(0),
-              rate: lisProducts2![index].rate,
+            rate: lisProducts2![index].rate,
             price: lisProducts2![index].price,
             goTo: ProductDetailPage(
               productModel: lisProducts2![index],

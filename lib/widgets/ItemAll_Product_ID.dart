@@ -1,36 +1,27 @@
-import 'package:firebase_9_app/models/product_model.dart'; 
+import 'package:firebase_9_app/models/product_model.dart';
+import 'package:firebase_9_app/pages/cart_page.dart';
+import 'package:firebase_9_app/pages/home_page.dart';
 import 'package:firebase_9_app/pages/producl_Detail_page.dart';
+import 'package:firebase_9_app/pages/product_List_page.dart';
 import 'package:firebase_9_app/services/firebase_services.dart';
-import 'package:firebase_9_app/widgets/ItemAll_Product_ID.dart';
 import 'package:firebase_9_app/widgets/Item_Product_ID.dart';
 import 'package:firebase_9_app/widgets/app_bar.dart';
 import 'package:firebase_9_app/widgets/category_widget.dart';
 import 'package:flutter/material.dart';
 
-class   ProductListPage extends StatefulWidget {
-  @override
-  State<ProductListPage> createState() => _ProductListPageState();
-}
-
-class _ProductListPageState extends State<ProductListPage> {
-  FirestoreService collectionProduc =
-      FirestoreService(collection: "productos");
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  bool loading = true;
-  List banner = [];
-  List brand = []; 
+class ItemAllProductID extends StatelessWidget {
+  FirestoreService collectionProduc = FirestoreService(collection: "productos");
+  String? idProducto;
+  Future? futuro;
+  ItemAllProductID({required this.futuro, this.idProducto});
   @override
   Widget build(BuildContext context) {
+    bool loading = true;
     return Scaffold(
       backgroundColor: const Color(0xff0A0D15),
-      appBar:PreferredSize(
-        preferredSize: Size.fromHeight(45),
-        child: AppBarWidget( titulo: "Gymshark"),),
+    appBar:PreferredSize(
+        preferredSize: const Size.fromHeight(45),
+        child: AppBarWidget(titulo: "Gymshark", ),),
       body: loading == false
           ? const Center(
               child: CircularProgressIndicator(
@@ -38,49 +29,53 @@ class _ProductListPageState extends State<ProductListPage> {
               ),
             )
           : Stack(
-            children:[
-               SingleChildScrollView(
-              primary: true,
-              child: Column(
-                children: [
-                const  SizedBox(height: 50,),
-                  Container(
-                      margin: const EdgeInsets.symmetric(vertical: 5),
-                      child: SafeArea(
-                        child: FutureBuilder(
-                          future: collectionProduc.getProductModel(),
-                          builder: (BuildContext context, AsyncSnapshot snapshot) {
-                            if (snapshot.hasData) {
-                              List<ProductModel> aux = snapshot.data;
-                              return GridView.count(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 1,
-                                childAspectRatio: 0.72,
-                                primary: true,
-                                shrinkWrap: true,
-                                // crossAxisSpacing: 10,
-                                // mainAxisSpacing: 10,
-                                physics: const ScrollPhysics(),
-                                children: List.generate(
-                                    aux.length,
-                                    (index) => ItemListProductID(
-                                        name: aux[index].name,
-                                        image: aux[index].image,
-                                        price: aux[index].price,
-                                        goto: ProductDetailPage(
-                                          productModel: aux[index],
-                                        ))),
-                              );
-                            }
-                            return Container();
-                          },
+              children: [
+                SingleChildScrollView(
+                  primary: true,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 55,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        child: SafeArea(
+                          child: FutureBuilder(
+                            future: futuro,
+                            builder:
+                                (BuildContext context, AsyncSnapshot snapshot) {
+                              if (snapshot.hasData) {
+                                List<ProductModel> aux = snapshot.data;
+                                return GridView.count(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 1,
+                                  childAspectRatio: 0.72,
+                                  primary: true,
+                                  shrinkWrap: true,
+                                  // crossAxisSpacing: 10,
+                                  // mainAxisSpacing: 10,
+                                  physics: const ScrollPhysics(),
+                                  children: List.generate(
+                                      aux.length,
+                                      (index) => ItemListProductID(
+                                          name: aux[index].name,
+                                          image: aux[index].image,
+                                          price: aux[index].price,
+                                          goto: ProductDetailPage(
+                                            productModel: aux[index],
+                                          ))),
+                                );
+                              }
+                              return Container();
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-            ),Container(
-                  height: 55,
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 50,
                   decoration: const BoxDecoration(color: Color(0xff0A0D15)),
                   child: Align(
                     alignment: Alignment.topCenter,
@@ -130,8 +125,8 @@ class _ProductListPageState extends State<ProductListPage> {
                     ),
                   ),
                 ),
-            ],
-          ),
+              ],
+            ),
     );
   }
 }
